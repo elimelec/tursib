@@ -74,7 +74,7 @@ def print_program route, stop
 		hours.each do |h|
 			h =  h.css("div")
 			h.each do |h|
-				print h.text + "\t"
+				print h.text + " \t "
 			end
 			puts
 			puts
