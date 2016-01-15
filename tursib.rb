@@ -14,13 +14,18 @@ class Route
 	end
 end
 
-def print_routes
+def print_routes routes
+	routes.each do |r|
+		puts "#{r.number}: #{r.name}"
+	end
+end
+
+def get_routes
 	routes = Nokogiri::HTML(open("http://tursib.ro/en/trasee"))
 	routes = routes.css("div.section table.table1 tr")
 
-	routes.each do |route|
-		r = Route.new route
-		puts "#{r.number}: #{r.name}"
+	routes.map do |route|
+		Route.new route
 	end
 end
 
@@ -102,6 +107,6 @@ if stop
 elsif route
 	print_route route
 else
-	print_routes
+	print_routes get_routes
 end
 
