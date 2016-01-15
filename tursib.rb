@@ -3,14 +3,24 @@
 require 'nokogiri'
 require 'open-uri'
 
+class Route
+	attr_accessor :name, :number, :link
+
+	def initialize(route)
+		@number = route.css("td.cod a").first.content
+		@link = route.css("td.cod a").first.attribute("href").value
+		@link = "http://tursib.ro#{@link}"
+		@name = route.css("td.denumire a").first.content
+	end
+end
+
 def print_routes
 	routes = Nokogiri::HTML(open("http://tursib.ro/en/trasee"))
 	routes = routes.css("div.section table.table1 tr")
 
 	routes.each do |route|
-		number = route.css("td.cod a").first.content
-		name = route.css("td.denumire a").first.content
-		p "#{number}: #{name}"
+		r = Route.new route
+		puts "#{r.number}: #{r.name}"
 	end
 end
 
