@@ -12,6 +12,27 @@ class Route
 		@link = "http://tursib.ro#{@link}"
 		@name = route.css("td.denumire a").first.content
 	end
+
+	def print_stops
+		route = Nokogiri::HTML(open(@link))
+
+		going = route.css("div.fl table.statii tr")
+		returning = route.css("div.fr table.statii tr")
+
+		[going, returning].each do |stops|
+			stops.each do |stop|
+				stop = stop.css("td a").first
+				next unless stop
+
+				name = stop.text
+				number = stop.attribute("href")
+				number = number.value[/statie=[0-9]+/][/[0-9]+/]
+
+				puts "#{number}: #{name}"
+			end
+			puts
+		end
+	end
 end
 
 def print_routes routes
@@ -29,29 +50,9 @@ def get_routes
 	end
 end
 
-def print_stops stops
-	stops.each do |stop|
-		stop = stop.css("td a").first
-		next unless stop
-
-		name = stop.text 
-		number = stop.attribute("href")
-		number = number.value[/statie=[0-9]+/][/[0-9]+/]
-
-		p "#{number}: #{name}"
-	end
-end
-
 def print_route route
-	route = "http://tursib.ro/en/traseu/#{route}"
-	route = Nokogiri::HTML(open(route))
-
-	going = route.css("div.fl table.statii tr")
-	returning = route.css("div.fr table.statii tr")
-
-	print_stops going
-	puts
-	print_stops returning
+	route = get_routes.find {|r| r.number == route}
+	route.print_stops
 end
 
 def find_stops route, stop
