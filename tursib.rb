@@ -13,19 +13,19 @@ class Route
 		@name = route.css("td.denumire a").first.content
 	end
 
-	def print_stops
+	def print_stations
 		route = Nokogiri::HTML(open(@link))
 
 		going = route.css("div.fl table.statii tr")
 		returning = route.css("div.fr table.statii tr")
 
-		[going, returning].each do |stops|
-			stops.each do |stop|
-				stop = stop.css("td a").first
-				next unless stop
+		[going, returning].each do |stations|
+			stations.each do |station|
+				station = station.css("td a").first
+				next unless station
 
-				name = stop.text
-				number = stop.attribute("href")
+				name = station.text
+				number = station.attribute("href")
 				number = number.value[/statie=[0-9]+/][/[0-9]+/]
 
 				puts "#{number}: #{name}"
@@ -52,10 +52,10 @@ end
 
 def print_route route
 	route = get_routes.find {|r| r.number == route}
-	route.print_stops
+	route.print_stations
 end
 
-def find_stops route, stop
+def find_stations route, station
 	route = "http://tursib.ro/en/traseu/#{route}"
 	route = Nokogiri::HTML(open(route))
 
@@ -70,7 +70,7 @@ def find_stops route, stop
 		name = s.text
 		link = s.attribute("href").value
 
-		links.push link if name[/#{stop}/i]
+		links.push link if name[/#{station}/i]
 	end
 
 	links.map do |link|
@@ -78,16 +78,16 @@ def find_stops route, stop
 	end
 end
 
-def print_program route, stop
-	links = find_stops route,stop
+def print_program route, station
+	links = find_stations route, station
 	links.each do |link|
-		stop = Nokogiri::HTML(open(link))
-		name = stop.css("h2 span").first
+		station = Nokogiri::HTML(open(link))
+		name = station.css("h2 span").first
 		name = name.text + name.next.text
 		p name
 		p
 
-		hours = stop.css("div.plecari")
+		hours = station.css("div.plecari")
 
 		hours.each do |h|
 			h =  h.css("div")
@@ -101,10 +101,10 @@ def print_program route, stop
 end
 
 route = ARGV[0]
-stop = ARGV[1]
+station = ARGV[1]
 
-if stop
-	print_program route, stop
+if station
+	print_program route, station
 elsif route
 	print_route route
 else
