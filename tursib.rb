@@ -60,14 +60,11 @@ def print_route route
 end
 
 def find_stations route, station
-	route = "http://tursib.ro/en/traseu/#{route}"
-	route = Nokogiri::HTML(open(route))
-
-	going = route.css("div.fl table.statii tr")
-	returning = route.css("div.fr table.statii tr")
+	route = get_routes.find {|r| r.number == route}
+	stations = route.get_stations.flatten
 
 	links = []
-	(going + returning).each do |s|
+	stations.each do |s|
 		s = s.css("td a").first
 		next unless s
 
