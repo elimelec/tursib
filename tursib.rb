@@ -13,13 +13,17 @@ class Route
 		@name = route.css("td.denumire a").first.content
 	end
 
-	def print_stations
+	def get_stations
 		route = Nokogiri::HTML(open(@link))
 
 		going = route.css("div.fl table.statii tr")
 		returning = route.css("div.fr table.statii tr")
 
-		[going, returning].each do |stations|
+		[going, returning]
+	end
+
+	def print_stations
+		get_stations.each do |stations|
 			stations.each do |station|
 				station = station.css("td a").first
 				next unless station
