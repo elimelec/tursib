@@ -39,6 +39,25 @@ class Route
 	end
 end
 
+class Station
+  attr_accessor :name, :link, :hours
+
+  def initialize link
+		page = Nokogiri::HTML(open(link))
+
+		name = page.css("h2 span").first
+		@name = name.text + name.next.text
+
+		hours = page.css("div.plecari")
+	  @hours = hours.map do |h|
+			h =  h.css("div")
+			h.map do |h|
+				h.text
+			end
+		end
+  end
+end
+
 def print_routes routes
 	routes.each do |r|
 		puts "#{r.number}: #{r.name}"
@@ -82,18 +101,13 @@ end
 def print_program route, station
 	links = find_stations route, station
 	links.each do |link|
-		station = Nokogiri::HTML(open(link))
-		name = station.css("h2 span").first
-		name = name.text + name.next.text
-		p name
-		p
+    station = Station.new link
 
-		hours = station.css("div.plecari")
+		puts station.name
 
-		hours.each do |h|
-			h =  h.css("div")
+		station.hours.each do |h|
 			h.each do |h|
-				print h.text + " \t "
+				print h + " \t "
 			end
 			puts
 			puts
