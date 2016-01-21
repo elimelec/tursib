@@ -56,6 +56,16 @@ class Station
 			end
 		end
   end
+
+  def print_hours
+		@hours.each do |h|
+			h.each do |h|
+				print h + " \t "
+			end
+			puts
+			puts
+		end
+  end
 end
 
 def print_routes routes
@@ -104,14 +114,7 @@ def print_program route, station
     station = Station.new link
 
 		puts station.name
-
-		station.hours.each do |h|
-			h.each do |h|
-				print h + " \t "
-			end
-			puts
-			puts
-		end
+    station.print_hours
 	end
 end
 
